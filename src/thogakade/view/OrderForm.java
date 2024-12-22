@@ -12,12 +12,14 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import thogakade.controller.CustomerController;
 import thogakade.controller.ItemController;
 import thogakade.controller.OrderController;
 import thogakade.model.Customer;
 import thogakade.model.Item;
+import thogakade.model.OrderDetail;
 import thogakade.model.Orders;
 
 /**
@@ -25,6 +27,8 @@ import thogakade.model.Orders;
  * @author sandhanu
  */
 public class OrderForm extends javax.swing.JFrame {
+
+    private double TotalPrice;
 
     /**
      * Creates new form OrderForm
@@ -63,9 +67,9 @@ public class OrderForm extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTableOrder = new javax.swing.JTable();
-        jButton2 = new javax.swing.JButton();
+        btnAdd = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
-        jLabel7 = new javax.swing.JLabel();
+        lblTotal = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -187,10 +191,10 @@ public class OrderForm extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(jTableOrder);
 
-        jButton2.setText("Remove");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        btnAdd.setText("Add");
+        btnAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                btnAddActionPerformed(evt);
             }
         });
 
@@ -260,7 +264,7 @@ public class OrderForm extends javax.swing.JFrame {
                                 .addGap(15, 15, 15)
                                 .addComponent(lblCustomerName)))
                         .addGap(34, 34, 34)
-                        .addComponent(jButton2)
+                        .addComponent(btnAdd)
                         .addGap(64, 64, 64))))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(26, Short.MAX_VALUE)
@@ -270,7 +274,7 @@ public class OrderForm extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel8)
                 .addGap(33, 33, 33)
-                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButton3)
                 .addGap(22, 22, 22))
@@ -319,7 +323,7 @@ public class OrderForm extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(QtyWant, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton2))))
+                            .addComponent(btnAdd))))
                 .addGap(58, 58, 58)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
@@ -328,7 +332,7 @@ public class OrderForm extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(3, 3, 3)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel8))))
                 .addContainerGap())
         );
@@ -358,7 +362,7 @@ public class OrderForm extends javax.swing.JFrame {
             ArrayList<Customer> allCustomers = CustomerController.getAllCustomers();
 
             allCustomers.forEach(customer -> {
-              
+
                 ComboBoxCustomersID.addItem(customer.getId());
             });
 
@@ -378,22 +382,22 @@ public class OrderForm extends javax.swing.JFrame {
         try {
             ArrayList<Customer> allCustomers = CustomerController.getAllCustomers();
             lblCustomerName.setText(allCustomers.get(ComboBoxCustomersID.getSelectedIndex()).getName());
-          
+
         } catch (ClassNotFoundException | SQLException ex) {
             Logger.getLogger(OrderForm.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        
+
     }//GEN-LAST:event_ComboBoxCustomersIDActionPerformed
 
     private void lblDateAncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_lblDateAncestorAdded
         LocalDate myDateObj = LocalDate.now();
-     
+
         DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("E, MMM dd yyyy ");
 
         String formattedDate = myDateObj.format(myFormatObj);
-       
-        lblDate.setText(formattedDate +"");
+
+        lblDate.setText(formattedDate + "");
 
     }//GEN-LAST:event_lblDateAncestorAdded
 
@@ -402,7 +406,7 @@ public class OrderForm extends javax.swing.JFrame {
             ArrayList<Item> allItems = ItemController.getAllItems();
 
             allItems.forEach(item -> {
-              
+
                 jComboBoxItemCode.addItem(item.getItemCode());
             });
 
@@ -412,42 +416,51 @@ public class OrderForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jComboBoxItemCodeAncestorAdded
 
     private void jComboBoxItemCodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxItemCodeActionPerformed
-      try {
-             ArrayList<Item> allItems = ItemController.getAllItems();
+        try {
+            ArrayList<Item> allItems = ItemController.getAllItems();
             lblItemDescription.setText(allItems.get(jComboBoxItemCode.getSelectedIndex()).getDescription());
-            lblUnitPrice.setText(allItems.get(jComboBoxItemCode.getSelectedIndex()).getUnitPrice()+"");
-            lblQtyHave.setText(allItems.get(jComboBoxItemCode.getSelectedIndex()).getQtyOnHand()+"");
-          
-          
+            lblUnitPrice.setText(allItems.get(jComboBoxItemCode.getSelectedIndex()).getUnitPrice() + "");
+            lblQtyHave.setText(allItems.get(jComboBoxItemCode.getSelectedIndex()).getQtyOnHand() + "");
+
         } catch (ClassNotFoundException | SQLException ex) {
             Logger.getLogger(OrderForm.class.getName()).log(Level.SEVERE, null, ex);
-        } 
+        }
     }//GEN-LAST:event_jComboBoxItemCodeActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
+        
+        for (int i = 0; i < jTableOrder.getRowCount(); i++) {
+          OrderDetail orderDetail = new OrderDetail(lblOrderIdValue.getText(), jTableOrder.getValueAt(i, 0)+"", (Integer)jTableOrder.getValueAt(i, 2), (Double)jTableOrder.getValueAt(i, 3));
+        try {
+            OrderController.addorderDetail(orderDetail);
+           
+        } catch (SQLException | ClassNotFoundException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage());
+        }   
+        }
+       
     }//GEN-LAST:event_jButton3ActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-  int ItemQty = Integer.parseInt(QtyWant.getText());
-    double ItemPrice = Double.parseDouble(lblUnitPrice.getText());
-        
-   DefaultTableModel model=(DefaultTableModel)jTableOrder.getModel();
-   model.addRow(new Object[]{ComboBoxCustomersID.getSelectedItem()+"",lblItemDescription.getText(),ItemQty,ItemPrice,ItemQty*ItemPrice});
-   
-    }//GEN-LAST:event_jButton2ActionPerformed
+    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
+        int ItemQty = Integer.parseInt(QtyWant.getText());
+        double ItemPrice = Double.parseDouble(lblUnitPrice.getText());
+
+        DefaultTableModel model = (DefaultTableModel) jTableOrder.getModel();
+        model.addRow(new Object[]{jComboBoxItemCode.getSelectedItem() + "", lblItemDescription.getText(), ItemQty, ItemPrice, ItemQty * ItemPrice});
+        TotalPrice += ItemQty * ItemPrice;
+        lblTotal.setText(TotalPrice + "");
+    }//GEN-LAST:event_btnAddActionPerformed
 
     /**
      * @param args the command line arguments
      */
-    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> ComboBoxCustomersID;
     private javax.swing.JLabel FormName;
     private javax.swing.JTextField QtyWant;
+    private javax.swing.JButton btnAdd;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JComboBox<String> jComboBoxItemCode;
     private javax.swing.JLabel jLabel1;
@@ -456,7 +469,6 @@ public class OrderForm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTableOrder;
@@ -466,6 +478,7 @@ public class OrderForm extends javax.swing.JFrame {
     private javax.swing.JLabel lblOrderIdTxt;
     private javax.swing.JLabel lblOrderIdValue;
     private javax.swing.JLabel lblQtyHave;
+    private javax.swing.JLabel lblTotal;
     private javax.swing.JLabel lblUnitPrice;
     // End of variables declaration//GEN-END:variables
 }

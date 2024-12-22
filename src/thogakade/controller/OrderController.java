@@ -13,6 +13,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import thogakade.model.Customer;
 import thogakade.model.Orders;
+import thogakade.model.OrderDetail;
 
 /**
  *
@@ -20,17 +21,17 @@ import thogakade.model.Orders;
  */
 public class OrderController {
 
-//    public static boolean addCustomer(Customer customer) throws SQLException, ClassNotFoundException {
-//        Class.forName("com.mysql.cj.jdbc.Driver");
-//        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/thogakade2", "root", "1234");
-//        String SQL = "Insert into Customer Values(?,?,?,?)";
-//        PreparedStatement stm = connection.prepareStatement(SQL);
-//        stm.setObject(1, customer.getId());
-//        stm.setObject(2, customer.getName());
-//        stm.setObject(3, customer.getAddress());
-//        stm.setObject(4, customer.getSalary());
-//        return stm.executeUpdate() > 0;
-//    }
+    public static boolean addorderDetail(OrderDetail orderDetail) throws SQLException, ClassNotFoundException {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/thogakade2", "root", "1234");
+        String SQL = "Insert into orderdetail Values(?,?,?,?)";
+        PreparedStatement stm = connection.prepareStatement(SQL);
+        stm.setObject(1, orderDetail.getOrderId());
+        stm.setObject(2, orderDetail.getItemCode());
+        stm.setObject(3, orderDetail.getQty());
+        stm.setObject(4, orderDetail.getUnitPrice());
+        return stm.executeUpdate() > 0;
+    }
 //
 //    public static boolean updateCustomer(Customer customer) throws SQLException, ClassNotFoundException {
 //        Class.forName("com.mysql.cj.jdbc.Driver");

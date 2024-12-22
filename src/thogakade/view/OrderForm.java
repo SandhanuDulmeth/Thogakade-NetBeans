@@ -71,6 +71,7 @@ public class OrderForm extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
         lblTotal = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setLocation(new java.awt.Point(500, 300));
@@ -208,6 +209,13 @@ public class OrderForm extends javax.swing.JFrame {
         jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel8.setText("Total :");
 
+        jButton2.setText("Clear Table");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -267,17 +275,24 @@ public class OrderForm extends javax.swing.JFrame {
                         .addComponent(btnAdd)
                         .addGap(64, 64, 64))))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(26, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 890, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel8)
-                .addGap(33, 33, 33)
-                .addComponent(lblTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton3)
-                .addGap(22, 22, 22))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jLabel8)
+                        .addGap(33, 33, 33)
+                        .addComponent(lblTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton3)
+                        .addGap(22, 22, 22))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 20, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 890, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap())
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jButton2)
+                                .addGap(406, 406, 406))))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -326,7 +341,9 @@ public class OrderForm extends javax.swing.JFrame {
                             .addComponent(btnAdd))))
                 .addGap(58, 58, 58)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jButton3)
                     .addGroup(layout.createSequentialGroup()
@@ -341,7 +358,10 @@ public class OrderForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void lblOrderIdValueAncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_lblOrderIdValueAncestorAdded
-        try {
+      lastorderId();
+    }//GEN-LAST:event_lblOrderIdValueAncestorAdded
+public void lastorderId(){
+  try {
             ArrayList<Orders> OrdersList = OrderController.getAllOrders();
             String lastId = OrdersList.getLast().getOrdeId();
             int nextId = Integer.parseInt(lastId.split("[D]")[1]);
@@ -351,8 +371,7 @@ public class OrderForm extends javax.swing.JFrame {
         } catch (SQLException ex) {
             Logger.getLogger(OrderForm.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_lblOrderIdValueAncestorAdded
-
+}
     private void ComboBoxCustomersIDAncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_ComboBoxCustomersIDAncestorAdded
         ComboboxCustomerId();
     }//GEN-LAST:event_ComboBoxCustomersIDAncestorAdded
@@ -441,6 +460,7 @@ public class OrderForm extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(this, ex.getMessage());
                 }
             }
+             lastorderId();cleartable();
         } catch (SQLException ex) {
             Logger.getLogger(OrderForm.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
@@ -450,15 +470,59 @@ public class OrderForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-        int ItemQty = Integer.parseInt(QtyWant.getText());
-        double ItemPrice = Double.parseDouble(lblUnitPrice.getText());
 
-        DefaultTableModel model = (DefaultTableModel) jTableOrder.getModel();
-        model.addRow(new Object[]{jComboBoxItemCode.getSelectedItem() + "", lblItemDescription.getText(), ItemQty, ItemPrice, ItemQty * ItemPrice});
-        TotalPrice += ItemQty * ItemPrice;
-        lblTotal.setText(TotalPrice + "");
+  int itemQty = Integer.parseInt(QtyWant.getText());
+    double itemPrice = Double.parseDouble(lblUnitPrice.getText());
+    String itemCode = jComboBoxItemCode.getSelectedItem().toString();
+
+    DefaultTableModel model = (DefaultTableModel) jTableOrder.getModel();
+    boolean itemExists = false;
+
+    for (int i = 0; i < model.getRowCount(); i++) {
+        // Check if the item code already exists in the table
+        if (model.getValueAt(i, 0).toString().equals(itemCode)) {
+            // Update quantity and total price for the existing item
+            int existingQty = Integer.parseInt(model.getValueAt(i, 2).toString());
+            int newQty = existingQty + itemQty;
+            model.setValueAt(newQty, i, 2); // Update the quantity
+            model.setValueAt(newQty * itemPrice, i, 4); // Update the total price for that row
+            itemExists = true;
+            break;
+        }
+    }
+
+    if (!itemExists) {
+        // If item code doesn't exist, add a new row
+        model.addRow(new Object[]{itemCode, lblItemDescription.getText(), itemQty, itemPrice, itemQty * itemPrice});
+    }
+
+    // Recalculate the total price for all items in the table
+    TotalPrice = 0;
+    for (int i = 0; i < model.getRowCount(); i++) {
+        TotalPrice += Double.parseDouble(model.getValueAt(i, 4).toString());
+    }
+
+    lblTotal.setText(String.valueOf(TotalPrice));
+
+
+
+
+//        int ItemQty = Integer.parseInt(QtyWant.getText());
+//        double ItemPrice = Double.parseDouble(lblUnitPrice.getText());
+//
+//        DefaultTableModel model = (DefaultTableModel) jTableOrder.getModel();
+//        model.addRow(new Object[]{jComboBoxItemCode.getSelectedItem() + "", lblItemDescription.getText(), ItemQty, ItemPrice, ItemQty * ItemPrice});
+//        TotalPrice += ItemQty * ItemPrice;
+//        lblTotal.setText(TotalPrice + "");
     }//GEN-LAST:event_btnAddActionPerformed
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+
+    }//GEN-LAST:event_jButton2ActionPerformed
+public void cleartable(){
+  DefaultTableModel model = (DefaultTableModel) jTableOrder.getModel();
+model.setRowCount(0);
+}
     /**
      * @param args the command line arguments
      */
@@ -469,6 +533,7 @@ public class OrderForm extends javax.swing.JFrame {
     private javax.swing.JTextField QtyWant;
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JComboBox<String> jComboBoxItemCode;
     private javax.swing.JLabel jLabel1;

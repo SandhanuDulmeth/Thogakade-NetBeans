@@ -109,6 +109,7 @@ public class OrderForm extends javax.swing.JFrame {
             }
         });
 
+        jButton1.setBackground(new java.awt.Color(204, 255, 255));
         jButton1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jButton1.setText("New Cusotmer");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -192,6 +193,7 @@ public class OrderForm extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(jTableOrder);
 
+        btnAdd.setBackground(new java.awt.Color(204, 255, 255));
         btnAdd.setText("Add");
         btnAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -199,6 +201,7 @@ public class OrderForm extends javax.swing.JFrame {
             }
         });
 
+        jButton3.setBackground(new java.awt.Color(153, 255, 153));
         jButton3.setText("Place Order");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -209,6 +212,7 @@ public class OrderForm extends javax.swing.JFrame {
         jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel8.setText("Total :");
 
+        jButton2.setBackground(new java.awt.Color(255, 153, 153));
         jButton2.setText("Clear Table");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -460,7 +464,7 @@ public void lastorderId(){
                     JOptionPane.showMessageDialog(this, ex.getMessage());
                 }
             }
-             lastorderId();cleartable();
+             lastorderId();cleartable(); lblTotal.setText(null);
         } catch (SQLException ex) {
             Logger.getLogger(OrderForm.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
@@ -517,7 +521,7 @@ public void lastorderId(){
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-
+cleartable();
     }//GEN-LAST:event_jButton2ActionPerformed
 public void cleartable(){
   DefaultTableModel model = (DefaultTableModel) jTableOrder.getModel();

@@ -32,6 +32,17 @@ public class OrderController {
         stm.setObject(4, orderDetail.getUnitPrice());
         return stm.executeUpdate() > 0;
     }
+     public static boolean addorder(Orders order) throws SQLException, ClassNotFoundException {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/thogakade2", "root", "1234");
+        String SQL = "Insert into orders Values(?,?,?)";
+        PreparedStatement stm = connection.prepareStatement(SQL);
+        stm.setObject(1, order.getOrdeId());
+        stm.setObject(2, order.getDate());
+        stm.setObject(3, order.getCustomerId());
+       
+        return stm.executeUpdate() > 0;
+    }
 //
 //    public static boolean updateCustomer(Customer customer) throws SQLException, ClassNotFoundException {
 //        Class.forName("com.mysql.cj.jdbc.Driver");

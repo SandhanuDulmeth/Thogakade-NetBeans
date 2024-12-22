@@ -428,15 +428,23 @@ public class OrderForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jComboBoxItemCodeActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        
-        for (int i = 0; i < jTableOrder.getRowCount(); i++) {
-          OrderDetail orderDetail = new OrderDetail(lblOrderIdValue.getText(), jTableOrder.getValueAt(i, 0)+"", (Integer)jTableOrder.getValueAt(i, 2), (Double)jTableOrder.getValueAt(i, 3));
         try {
-            OrderController.addorderDetail(orderDetail);
-           
-        } catch (SQLException | ClassNotFoundException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage());
-        }   
+            Orders order=new Orders(lblOrderIdValue.getText(),LocalDate.now()+"",ComboBoxCustomersID.getSelectedItem()+"");
+            OrderController.addorder(order);
+            
+            for (int i = 0; i < jTableOrder.getRowCount(); i++) {
+                OrderDetail orderDetail = new OrderDetail(lblOrderIdValue.getText(), jTableOrder.getValueAt(i, 0)+"", (Integer)jTableOrder.getValueAt(i, 2), (Double)jTableOrder.getValueAt(i, 3));   
+                try {
+                    OrderController.addorderDetail(orderDetail);
+                    
+                } catch (SQLException | ClassNotFoundException ex) {
+                    JOptionPane.showMessageDialog(this, ex.getMessage());
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(OrderForm.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(OrderForm.class.getName()).log(Level.SEVERE, null, ex);
         }
        
     }//GEN-LAST:event_jButton3ActionPerformed

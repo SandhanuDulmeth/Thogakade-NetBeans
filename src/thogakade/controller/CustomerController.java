@@ -21,7 +21,7 @@ public class CustomerController {
 
     public static boolean addCustomer(Customer customer) throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/thogakade2", "root", "1234");
+        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/thogakade2useSSL=false", "root", "1234");
         String SQL = "Insert into Customer Values(?,?,?,?)";
         PreparedStatement stm = connection.prepareStatement(SQL);
         stm.setObject(1, customer.getId());
@@ -33,7 +33,7 @@ public class CustomerController {
 
     public static boolean updateCustomer(Customer customer) throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/thogakade2", "root", "1234");
+        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/thogakade2useSSL=false", "root", "1234");
 
         String SQL = "Update Customer set name=?, address=?, salary=? where id=?";
         PreparedStatement stm = connection.prepareStatement(SQL);
@@ -47,7 +47,7 @@ public class CustomerController {
     public static Customer searchCustomer(String id) throws ClassNotFoundException, SQLException {
         String SQL = "Select * From Customer where id='" + id + "'";
         Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/thogakade2", "root", "1234");
+        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/thogakade2?useSSL=false", "root", "1234");
         Statement stm = connection.createStatement();
         ResultSet rst = stm.executeQuery(SQL);
         if (rst.next()) {
@@ -57,7 +57,7 @@ public class CustomerController {
     }
     public static boolean deleteCustomer(String id) throws ClassNotFoundException, SQLException{
         Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/thogakade2", "root", "1234");
+        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/thogakade2?useSSL=false", "root", "1234");
 
         String SQL = "Delete From Customer where id='"+id+"'";  //?
         Statement stm = connection.createStatement();
@@ -65,7 +65,7 @@ public class CustomerController {
     }
     public static ArrayList<Customer> getAllCustomers() throws ClassNotFoundException, SQLException {
         Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/thogakade2", "root", "1234");
+        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/thogakade2?useSSL=false", "root", "1234");
         
         String SQL = "Select * From Customer";
         Statement stm = connection.createStatement();

@@ -67,7 +67,7 @@ public class ItemController {
 //    }
     public static ArrayList<Item> getAllItems() throws ClassNotFoundException, SQLException {
         Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/thogakade2", "root", "1234");
+        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/thogakade2?useSSL=false", "root", "1234");
         
         String SQL = "Select * From item";
         Statement stm = connection.createStatement();

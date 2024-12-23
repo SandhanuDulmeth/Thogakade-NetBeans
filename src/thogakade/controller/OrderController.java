@@ -23,7 +23,7 @@ public class OrderController {
 
     public static boolean addorderDetail(OrderDetail orderDetail) throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/thogakade2", "root", "1234");
+        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/thogakade2?useSSL=false", "root", "1234");
         String SQL = "Insert into orderdetail Values(?,?,?,?)";
         PreparedStatement stm = connection.prepareStatement(SQL);
         stm.setObject(1, orderDetail.getOrderId());
@@ -34,7 +34,7 @@ public class OrderController {
     }
      public static boolean addorder(Orders order) throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/thogakade2", "root", "1234");
+        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/thogakade2?useSSL=false", "root", "1234");
         String SQL = "Insert into orders Values(?,?,?)";
         PreparedStatement stm = connection.prepareStatement(SQL);
         stm.setObject(1, order.getOrdeId());
@@ -78,7 +78,7 @@ public class OrderController {
 //    }
     public static ArrayList<Orders> getAllOrders() throws ClassNotFoundException, SQLException {
         Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/thogakade2", "root", "1234");
+        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/thogakade2?useSSL=false", "root", "1234");
         
         String SQL = "Select * From orders";
         Statement stm = connection.createStatement();

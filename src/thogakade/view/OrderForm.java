@@ -362,10 +362,10 @@ public class OrderForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void lblOrderIdValueAncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_lblOrderIdValueAncestorAdded
-      lastorderId();
+        lastorderId();
     }//GEN-LAST:event_lblOrderIdValueAncestorAdded
-public void lastorderId(){
-  try {
+    public void lastorderId() {
+        try {
             ArrayList<Orders> OrdersList = OrderController.getAllOrders();
             String lastId = OrdersList.getLast().getOrdeId();
             int nextId = Integer.parseInt(lastId.split("[D]")[1]);
@@ -375,7 +375,7 @@ public void lastorderId(){
         } catch (SQLException ex) {
             Logger.getLogger(OrderForm.class.getName()).log(Level.SEVERE, null, ex);
         }
-}
+    }
     private void ComboBoxCustomersIDAncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_ComboBoxCustomersIDAncestorAdded
         ComboboxCustomerId();
     }//GEN-LAST:event_ComboBoxCustomersIDAncestorAdded
@@ -452,64 +452,71 @@ public void lastorderId(){
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         try {
-            Orders order=new Orders(lblOrderIdValue.getText(),LocalDate.now()+"",ComboBoxCustomersID.getSelectedItem()+"");
+            Orders order = new Orders(lblOrderIdValue.getText(), LocalDate.now() + "", ComboBoxCustomersID.getSelectedItem() + "");
             OrderController.addorder(order);
-            
+
             for (int i = 0; i < jTableOrder.getRowCount(); i++) {
-                OrderDetail orderDetail = new OrderDetail(lblOrderIdValue.getText(), jTableOrder.getValueAt(i, 0)+"", (Integer)jTableOrder.getValueAt(i, 2), (Double)jTableOrder.getValueAt(i, 3));   
+                OrderDetail orderDetail = new OrderDetail(lblOrderIdValue.getText(), jTableOrder.getValueAt(i, 0) + "", (Integer) jTableOrder.getValueAt(i, 2), (Double) jTableOrder.getValueAt(i, 3));
+                Item item = new Item((String) jTableOrder.getValueAt(i, 0), (String) jTableOrder.getValueAt(i, 1) + "", (Double) jTableOrder.getValueAt(i, 3), (Integer) jTableOrder.getValueAt(i, 2));
                 try {
-                    OrderController.addorderDetail(orderDetail);
-                    
+                    boolean addorderDetail = OrderController.addorderDetail(orderDetail);
+                    boolean updateStock = OrderController.updateStock(item);
+                    if (addorderDetail || updateStock) {
+                        JOptionPane.showMessageDialog(this, "Added Success");
+                       
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Added Fail");
+                    }
+
                 } catch (SQLException | ClassNotFoundException ex) {
                     JOptionPane.showMessageDialog(this, ex.getMessage());
                 }
             }
-             lastorderId();cleartable(); lblTotal.setText(null);
+            lastorderId();
+            cleartable();
+            lblTotal.setText(null);
         } catch (SQLException ex) {
             Logger.getLogger(OrderForm.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(OrderForm.class.getName()).log(Level.SEVERE, null, ex);
         }
-       
+
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
 
-  int itemQty = Integer.parseInt(QtyWant.getText());
-    double itemPrice = Double.parseDouble(lblUnitPrice.getText());
-    String itemCode = jComboBoxItemCode.getSelectedItem().toString();
+        int itemQty = Integer.parseInt(QtyWant.getText());
+        double itemPrice = Double.parseDouble(lblUnitPrice.getText());
+        String itemCode = jComboBoxItemCode.getSelectedItem().toString();
 
-    DefaultTableModel model = (DefaultTableModel) jTableOrder.getModel();
-    boolean itemExists = false;
+        DefaultTableModel model = (DefaultTableModel) jTableOrder.getModel();
+        boolean itemExists = false;
 
-    for (int i = 0; i < model.getRowCount(); i++) {
-        // Check if the item code already exists in the table
-        if (model.getValueAt(i, 0).toString().equals(itemCode)) {
-            // Update quantity and total price for the existing item
-            int existingQty = Integer.parseInt(model.getValueAt(i, 2).toString());
-            int newQty = existingQty + itemQty;
-            model.setValueAt(newQty, i, 2); // Update the quantity
-            model.setValueAt(newQty * itemPrice, i, 4); // Update the total price for that row
-            itemExists = true;
-            break;
+        for (int i = 0; i < model.getRowCount(); i++) {
+            // Check if the item code already exists in the table
+            if (model.getValueAt(i, 0).toString().equals(itemCode)) {
+                // Update quantity and total price for the existing item
+                int existingQty = Integer.parseInt(model.getValueAt(i, 2).toString());
+                int newQty = existingQty + itemQty;
+                model.setValueAt(newQty, i, 2); // Update the quantity
+                model.setValueAt(newQty * itemPrice, i, 4); // Update the total price for that row
+                itemExists = true;
+                break;
+            }
         }
-    }
 
-    if (!itemExists) {
-        // If item code doesn't exist, add a new row
-        model.addRow(new Object[]{itemCode, lblItemDescription.getText(), itemQty, itemPrice, itemQty * itemPrice});
-    }
+        if (!itemExists) {
+            // If item code doesn't exist, add a new row
+            model.addRow(new Object[]{itemCode, lblItemDescription.getText(), itemQty, itemPrice, itemQty * itemPrice});
+        }
 
-    // Recalculate the total price for all items in the table
-    TotalPrice = 0;
-    for (int i = 0; i < model.getRowCount(); i++) {
-        TotalPrice += Double.parseDouble(model.getValueAt(i, 4).toString());
-    }
+        // Recalculate the total price for all items in the table
+        TotalPrice = 0;
+        for (int i = 0; i < model.getRowCount(); i++) {
+            TotalPrice += Double.parseDouble(model.getValueAt(i, 4).toString());
+        }
 
-    lblTotal.setText(String.valueOf(TotalPrice));
-
-
-
+        lblTotal.setText(String.valueOf(TotalPrice));
 
 //        int ItemQty = Integer.parseInt(QtyWant.getText());
 //        double ItemPrice = Double.parseDouble(lblUnitPrice.getText());
@@ -521,12 +528,12 @@ public void lastorderId(){
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-cleartable();
+        cleartable();
     }//GEN-LAST:event_jButton2ActionPerformed
-public void cleartable(){
-  DefaultTableModel model = (DefaultTableModel) jTableOrder.getModel();
-model.setRowCount(0);
-}
+    public void cleartable() {
+        DefaultTableModel model = (DefaultTableModel) jTableOrder.getModel();
+        model.setRowCount(0);
+    }
     /**
      * @param args the command line arguments
      */

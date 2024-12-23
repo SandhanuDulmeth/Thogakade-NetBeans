@@ -4,6 +4,7 @@
  */
 package thogakade.view;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,6 +18,7 @@ import javax.swing.table.DefaultTableModel;
 import thogakade.controller.CustomerController;
 import thogakade.controller.ItemController;
 import thogakade.controller.OrderController;
+import thogakade.db.DBConnection;
 import thogakade.model.Customer;
 import thogakade.model.Item;
 import thogakade.model.OrderDetail;
@@ -452,34 +454,108 @@ public class OrderForm extends javax.swing.JFrame {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         try {
-            Orders order = new Orders(lblOrderIdValue.getText(), LocalDate.now() + "", ComboBoxCustomersID.getSelectedItem() + "");
-            OrderController.addorder(order);
+    DBConnection.getInstance().getConnection().setAutoCommit(false); // Start transaction
+    Orders order = new Orders(lblOrderIdValue.getText(), LocalDate.now() + "", ComboBoxCustomersID.getSelectedItem() + "");
+    OrderController.addorder(order);
 
-            for (int i = 0; i < jTableOrder.getRowCount(); i++) {
-                OrderDetail orderDetail = new OrderDetail(lblOrderIdValue.getText(), jTableOrder.getValueAt(i, 0) + "", (Integer) jTableOrder.getValueAt(i, 2), (Double) jTableOrder.getValueAt(i, 3));
-                Item item = new Item((String) jTableOrder.getValueAt(i, 0), (String) jTableOrder.getValueAt(i, 1) + "", (Double) jTableOrder.getValueAt(i, 3), (Integer) jTableOrder.getValueAt(i, 2));
-                try {
-                    boolean addorderDetail = OrderController.addorderDetail(orderDetail);
-                    boolean updateStock = OrderController.updateStock(item);
-                    if (addorderDetail || updateStock) {
-                        JOptionPane.showMessageDialog(this, "Added Success");
-                       
-                    } else {
-                        JOptionPane.showMessageDialog(this, "Added Fail");
-                    }
+    boolean success = true; // To track overall success
 
-                } catch (SQLException | ClassNotFoundException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage());
-                }
+    for (int i = 0; i < jTableOrder.getRowCount(); i++) {
+        OrderDetail orderDetail = new OrderDetail(
+            lblOrderIdValue.getText(),
+            jTableOrder.getValueAt(i, 0) + "",
+            (Integer) jTableOrder.getValueAt(i, 2),
+            (Double) jTableOrder.getValueAt(i, 3)
+        );
+
+        Item item = new Item(
+            (String) jTableOrder.getValueAt(i, 0),
+            (String) jTableOrder.getValueAt(i, 1) + "",
+            (Double) jTableOrder.getValueAt(i, 3),
+            (Integer) jTableOrder.getValueAt(i, 2)
+        );
+
+        try {
+            boolean addOrderDetail = OrderController.addorderDetail(orderDetail);
+            boolean updateStock = OrderController.updateStock(item);
+
+            if (!addOrderDetail || !updateStock) {
+                success = false; // Mark failure
+                break; // Exit the loop
             }
-            lastorderId();
-            cleartable();
-            lblTotal.setText(null);
-        } catch (SQLException ex) {
-            Logger.getLogger(OrderForm.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(OrderForm.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException | ClassNotFoundException ex) {
+            success = false; // Mark failure
+            JOptionPane.showMessageDialog(this, ex.getMessage());
+            break; // Exit the loop
         }
+    }
+
+    if (success) {
+        DBConnection.getInstance().getConnection().commit(); // Commit if all operations succeed
+        JOptionPane.showMessageDialog(this, "Added Successfully");
+    } else {
+        DBConnection.getInstance().getConnection().rollback(); // Rollback on any failure
+        JOptionPane.showMessageDialog(this, "Transaction Failed");
+    }
+
+    lastorderId();
+    cleartable();
+    lblTotal.setText(null);
+
+} catch (SQLException | ClassNotFoundException ex) {
+    Logger.getLogger(OrderForm.class.getName()).log(Level.SEVERE, null, ex);
+    try {
+        DBConnection.getInstance().getConnection().rollback(); // Rollback on exception
+    } catch (SQLException | ClassNotFoundException rollbackEx) {
+        Logger.getLogger(OrderForm.class.getName()).log(Level.SEVERE, null, rollbackEx);
+    }
+} finally {
+    try {
+        DBConnection.getInstance().getConnection().setAutoCommit(true); // Restore auto-commit
+    } catch (ClassNotFoundException | SQLException ex) {
+        Logger.getLogger(OrderForm.class.getName()).log(Level.SEVERE, null, ex);
+    }
+}
+
+        
+        
+  
+        
+//        try {
+//            DBConnection.getInstance().getConnection().setAutoCommit(false); ///////////
+//            Orders order = new Orders(lblOrderIdValue.getText(), LocalDate.now() + "", ComboBoxCustomersID.getSelectedItem() + "");
+//            OrderController.addorder(order);
+//
+//            for (int i = 0; i < jTableOrder.getRowCount(); i++) {
+//                OrderDetail orderDetail = new OrderDetail(lblOrderIdValue.getText(), jTableOrder.getValueAt(i, 0) + "", (Integer) jTableOrder.getValueAt(i, 2), (Double) jTableOrder.getValueAt(i, 3));
+//                Item item = new Item((String) jTableOrder.getValueAt(i, 0), (String) jTableOrder.getValueAt(i, 1) + "", (Double) jTableOrder.getValueAt(i, 3), (Integer) jTableOrder.getValueAt(i, 2));
+//                try {
+//                    boolean addorderDetail = OrderController.addorderDetail(orderDetail);
+//                    boolean updateStock = OrderController.updateStock(item);
+//                    if (addorderDetail || updateStock) {
+//                        JOptionPane.showMessageDialog(this, "Added Success");
+//                       DBConnection.getInstance().getConnection().commit();/////////////////
+//                    } else {
+//                        DBConnection.getInstance().getConnection().rollback();
+//                        JOptionPane.showMessageDialog(this, "Added Fail");
+//                    }
+//
+//                } catch (SQLException | ClassNotFoundException ex) {
+//                    JOptionPane.showMessageDialog(this, ex.getMessage());
+//                }
+//            }
+//            lastorderId();
+//            cleartable();
+//            lblTotal.setText(null);
+//        } catch (SQLException | ClassNotFoundException ex) {
+//            Logger.getLogger(OrderForm.class.getName()).log(Level.SEVERE, null, ex);
+//        }finally{///////////////////
+//            try {///////////////
+//                DBConnection.getInstance().getConnection().setAutoCommit(true);//////////////
+//            } catch (ClassNotFoundException | SQLException ex) {//////////
+//                Logger.getLogger(OrderForm.class.getName()).log(Level.SEVERE, null, ex);//////////////
+//            }////////////
+//        }///////////////////
 
     }//GEN-LAST:event_jButton3ActionPerformed
 
